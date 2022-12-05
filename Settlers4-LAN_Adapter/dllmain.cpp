@@ -111,11 +111,13 @@ bool initWinSockLibrary()
 
 VOID WINAPI onDllAttach(HMODULE hModule)
 {
+    CHAR iniFilePart[] = "\\Exe\\plugins\\LAN_Adapter.ini";
     CHAR iniFilePath[MAX_PATH] = {};
+
     DWORD result = GetCurrentDirectoryA(MAX_PATH, iniFilePath);
 
-    if (result != 0 && result <= MAX_PATH - 25);
-        strcat_s(iniFilePath, "\\Exe\\plugins\\LAN_Adapter.ini");
+    if (result != 0 && result <= MAX_PATH - sizeof(iniFilePart));
+        strcat_s(iniFilePath, iniFilePart);
 
     GetPrivateProfileStringA("LAN_Adapter", "AdapterName", NULL, adapterName, sizeof(adapterName), iniFilePath);
 }
