@@ -1,16 +1,10 @@
-#ifndef _HACKS_HOOK_H_
-#define _HACKS_HOOK_H_
+#pragma once
 
 #include <cstring> // memcpy, std::size_t
 #include <windows.h> // WinAPI functions
 
 #include "untyped.h"
-
-enum class InvokeType
-{
-	kDisabled,
-	kNormal
-};
+#include "InvokeType.h"
 
 template <typename T>
 class Hook
@@ -114,7 +108,7 @@ public:
 
 	operator T()
 	{
-		return *(T)(address);
+		return reinterpret_cast<T>(address);
 	}
 };
 
@@ -123,5 +117,3 @@ static inline Hook<T> CreateHook(const untyped& address, T detour, const InvokeT
 {
 	return Hook<T>(address, detour, invokeType);
 }
-
-#endif

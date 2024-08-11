@@ -1,0 +1,49 @@
+{
+	"version": 3,
+	"configurePresets": [
+		{
+			"name": "windows",
+			"hidden": true,
+			"generator": "Ninja",
+			"binaryDir": "${sourceDir}/out/build/${presetName}",
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Windows"
+			},
+			"cacheVariables": {
+				"CMAKE_C_COMPILER": "cl.exe",
+				"CMAKE_CXX_COMPILER": "cl.exe"
+			}
+		},
+		{
+			"name": "x86",
+			"hidden": true,
+			"architecture": {
+				"value": "x86",
+				"strategy": "external"
+			}
+		},
+		{
+			"name": "debug",
+			"hidden": true,
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Debug"
+			}
+		},
+		{
+			"name": "release",
+			"hidden": true,
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Release"
+			}
+		},
+
+		{ "name": "Windows-x86-Debug", "inherits": ["windows", "x86", "debug"] },
+		{ "name": "Windows-x86-Release", "inherits": ["windows", "x86", "release"] }
+	],
+	"buildPresets": [
+		{ "name": "Windows-x86-Debug", "configurePreset": "Windows-x86-Debug" },
+		{ "name": "Windows-x86-Release", "configurePreset": "Windows-x86-Release" }
+	]
+}

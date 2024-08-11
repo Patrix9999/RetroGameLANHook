@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "Hacks/IATHook.h"
 
 #include <string>
 #include <iphlpapi.h>
@@ -6,7 +6,7 @@
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "Iphlpapi.lib")
 
-std::string GetAdapterFriendlyName(const char* GUID)
+static std::string GetAdapterFriendlyName(const char* GUID)
 {
     std::string result = "";
 
@@ -37,7 +37,7 @@ std::string GetAdapterFriendlyName(const char* GUID)
     return result;
 }
 
-std::string GetAdapterIP(std::string adapterName)
+static std::string GetAdapterIP(std::string adapterName)
 {
     ULONG ipAdapterInfoSize = 0;
     PIP_ADAPTER_INFO pAdapterInfo = nullptr;
@@ -69,9 +69,7 @@ std::string GetAdapterIP(std::string adapterName)
 }
 
 static char adapterName[64];
-
-hostent* (__stdcall*& ptr_gethostbyname)(const char*) = *(hostent * (__stdcall**)(const char*))0x00A31C14;
-hostent* __stdcall proxy_gethostbyname(const char* name)
+static hostent* __stdcall proxy_gethostbyname(const char* name)
 {
     std::string adapterIP = GetAdapterIP(adapterName);
 
@@ -95,31 +93,34 @@ hostent* __stdcall proxy_gethostbyname(const char* name)
 	return result;
 }
 
-bool initWinSockLibrary();
-HOOK Ivk_initWinSockLibrary AS(0x0057E5D0, initWinSockLibrary);
-bool initWinSockLibrary()
+static FARPROC __stdcall IATHook_GetProcAddress(HMODULE hModule, LPCSTR lpProcName);
+auto IAT_GetProcAddress = CreateHook(NULL, "kernel32.dll", "GetProcAddress", IATHook_GetProcAddress, InvokeType::kDisabled);
+static FARPROC __stdcall IATHook_GetProcAddress(HMODULE hModule, LPCSTR lpProcName)
 {
-	Ivk_initWinSockLibrary.Detach();
+    if (strcmp(lpProcName, "gethostbyname") == 0)
+        return reinterpret_cast<FARPROC>(&proxy_gethostbyname);
 
-	bool result = Ivk_initWinSockLibrary();
-	ptr_gethostbyname = proxy_gethostbyname;
-
-	Ivk_initWinSockLibrary.Attach();
-
-	return result;
+    return IAT_GetProcAddress(hModule, lpProcName);
 }
 
+static char moduleName[64];
 VOID WINAPI onDllAttach(HMODULE hModule)
 {
-    CHAR iniFilePart[] = "\\Exe\\plugins\\LAN_Adapter.ini";
+    CHAR iniFileName[] = "RetroGameLANHook.ini";
     CHAR iniFilePath[MAX_PATH] = {};
 
-    DWORD result = GetCurrentDirectoryA(MAX_PATH, iniFilePath);
+    DWORD result = GetModuleFileNameA(hModule, iniFilePath, sizeof(iniFilePath));
+    if (result == 0 || result >= MAX_PATH)
+        return;
 
-    if (result != 0 && result <= MAX_PATH - sizeof(iniFilePart))
-        strcat_s(iniFilePath, iniFilePart);
+    iniFilePath[strrchr(iniFilePath, '\\') - iniFilePath + 1] = NULL;
+    strcat_s(iniFilePath, iniFileName);
 
-    GetPrivateProfileStringA("LAN_Adapter", "AdapterName", NULL, adapterName, sizeof(adapterName), iniFilePath);
+    GetPrivateProfileStringA("Settings", "AdapterName", NULL, adapterName, sizeof(adapterName), iniFilePath);
+    GetPrivateProfileStringA("Settings", "ModuleName", NULL, moduleName, sizeof(moduleName), iniFilePath);
+
+    IAT_GetProcAddress.SetModule(GetModuleHandleA(strlen(moduleName) != 0 ? moduleName : NULL));
+    IAT_GetProcAddress.Attach();
 }
 
 VOID WINAPI onDllDetach()
