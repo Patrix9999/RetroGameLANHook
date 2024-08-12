@@ -37,7 +37,7 @@ static std::string GetAdapterFriendlyName(const char* GUID)
     return result;
 }
 
-static std::string GetAdapterIP(std::string adapterName)
+static std::string GetAdapterIP(const char* adapterName)
 {
     ULONG ipAdapterInfoSize = 0;
     PIP_ADAPTER_INFO pAdapterInfo = nullptr;
@@ -70,15 +70,27 @@ static std::string GetAdapterIP(std::string adapterName)
 
 static char adapterName[64];
 
-static hostent* __stdcall hook_gethostbyname(const char* name);
+static hostent* __stdcall hook_gethostbyname(const char* _hostname);
+//auto Hook_gethostbyname = CreateHook(GetModuleHandleA(NULL), "ws2_32.dll", "gethostbyname", hook_gethostbyname);
 auto Hook_gethostbyname = CreateHook((DWORD)GetProcAddress(GetModuleHandleA("ws2_32.dll"), "gethostbyname"), hook_gethostbyname);
-static hostent* __stdcall hook_gethostbyname(const char* name)
+static hostent* __stdcall hook_gethostbyname(const char* _hostname)
 {
     Hook_gethostbyname.Detach();
 
+    // We need to spoof hostname to use local dns computer hostname,
+    // because some of the games like Age of Mythology for example,
+    //  query ip address using custom domain
+    DWORD hostnameSize = 0;
+    GetComputerNameExA(ComputerNameDnsHostname, NULL, &hostnameSize);
+
+    std::string hostname;
+    hostname.resize(hostnameSize);
+
+    GetComputerNameExA(ComputerNameDnsHostname, &hostname[0], &hostnameSize);
+
     std::string adapterIP = GetAdapterIP(adapterName);
 
-	hostent* result = gethostbyname(name);
+	hostent* result = gethostbyname(hostname.c_str());
 	int i = 0;
 
 	while (result->h_addr_list[i] != 0)
