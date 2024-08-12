@@ -1,6 +1,6 @@
 # Introduction
 
-You propably tried to play some old games with builtin LAN Lobby (for example: `Settlers IV` or `Age of Mythology`).  
+You propably tried to play some old games with builtin LAN Lobby (for example: `Settlers IV`).  
 The problem with such games is that they pick up the network adapter that is using network connection, which is a big problem when you want to play with your friends over the internet.
 
 Why is that? Most of those games rely on `WinSock.dll` or `WS2_32.dll`, which is a socket networking protocol, most of those game that do have the described problem above use it.  
@@ -18,8 +18,6 @@ Here's the example config with explanation what each options does:
 [Settings]
 ; [REQUIRED] Adapter name that the game will use, you can get it from: Control Panel -> Network and Internet -> Network Connections, or just type ncpa.cpl in windows run bar (WINDOWS + R)
 AdapterName = "Radmin VPN"
-; [OPTIONAL] dll library name that game uses to call socket functions, if the game directly calls socket functions, you can remove this entry, if not, you need to find the exact module name for your game.
-ModuleName = "ddraw.dll"
 ```
 
 ## How to use
