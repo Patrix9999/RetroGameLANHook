@@ -1,4 +1,4 @@
-#include "Hacks/IATHook.h"
+#include "Hacks/Hook.h"
 
 #include <string>
 #include <iphlpapi.h>
@@ -69,8 +69,13 @@ static std::string GetAdapterIP(std::string adapterName)
 }
 
 static char adapterName[64];
-static hostent* __stdcall proxy_gethostbyname(const char* name)
+
+static hostent* __stdcall hook_gethostbyname(const char* name);
+auto Hook_gethostbyname = CreateHook((DWORD)GetProcAddress(GetModuleHandleA("ws2_32.dll"), "gethostbyname"), hook_gethostbyname);
+static hostent* __stdcall hook_gethostbyname(const char* name)
 {
+    Hook_gethostbyname.Detach();
+
     std::string adapterIP = GetAdapterIP(adapterName);
 
 	hostent* result = gethostbyname(name);
@@ -90,17 +95,27 @@ static hostent* __stdcall proxy_gethostbyname(const char* name)
 	result->h_addr_list[0] = result->h_addr_list[i];
 	result->h_addr_list[1] = NULL;
 
+    Hook_gethostbyname.Attach();
+
 	return result;
 }
 
-static FARPROC __stdcall IATHook_GetProcAddress(HMODULE hModule, LPCSTR lpProcName);
-auto IAT_GetProcAddress = CreateHook(NULL, "kernel32.dll", "GetProcAddress", IATHook_GetProcAddress, InvokeType::kDisabled);
-static FARPROC __stdcall IATHook_GetProcAddress(HMODULE hModule, LPCSTR lpProcName)
+static void openConsole()
 {
-    if (strcmp(lpProcName, "gethostbyname") == 0)
-        return reinterpret_cast<FARPROC>(&proxy_gethostbyname);
+    AllocConsole();
 
-    return IAT_GetProcAddress(hModule, lpProcName);
+    freopen("conin$", "r", stdin);
+    freopen("conout$", "w", stdout);
+    freopen("conout$", "w", stderr);
+}
+
+static void closeConsole()
+{
+    fclose(stdin);
+    fclose(stdout);
+    fclose(stderr);
+
+    FreeConsole();
 }
 
 static char moduleName[64];
@@ -117,10 +132,6 @@ VOID WINAPI onDllAttach(HMODULE hModule)
     strcat_s(iniFilePath, iniFileName);
 
     GetPrivateProfileStringA("Settings", "AdapterName", NULL, adapterName, sizeof(adapterName), iniFilePath);
-    GetPrivateProfileStringA("Settings", "ModuleName", NULL, moduleName, sizeof(moduleName), iniFilePath);
-
-    IAT_GetProcAddress.SetModule(GetModuleHandleA(strlen(moduleName) != 0 ? moduleName : NULL));
-    IAT_GetProcAddress.Attach();
 }
 
 VOID WINAPI onDllDetach()
