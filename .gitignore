@@ -1,3 +1,8 @@
+# Project specific local files
+.vs/
+.vscode/
+.idea/
+
 # Windows files
 
 desktop.ini
@@ -6,11 +11,3 @@ desktop.ini
 
 /build/
 /out/
-
-# Visual Studio
-
-/.vs/
-
-# VS Code
-
-/.vscode/
