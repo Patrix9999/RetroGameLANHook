@@ -1,0 +1,1 @@
+- Added `x86` `wsock32.dll` proxy for easier installation for older games.

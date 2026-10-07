@@ -1,0 +1,83 @@
+name: "Release"
+
+on:
+  push:
+    tags:
+      - '*'
+
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version"
+        required: true
+        type: string
+
+      create_release:
+        description: "Create release"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  plugin:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          submodules: recursive
+          lfs: true
+
+      - name: Set up MSVC
+        uses: ./.github/actions/msvc-dev-cmd
+        with:
+          arch: x86
+
+      - name: Determine version
+        run: |
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            $version = "${{ inputs.version }}"
+          } else {
+            $version = "${{ github.ref_name }}"
+          }
+          
+          echo "PROJECT_VERSION=$version" >> $env:GITHUB_ENV
+          echo "Version: $version"
+
+      - name: Compile plugin
+        run: |
+          cmake . --preset Windows-x86-Release -DPROJECT_VERSION="${{ env.PROJECT_VERSION }}"
+          cmake --build --preset Windows-x86-Release
+
+      - name: Prepare release files
+        run: |
+          $build_dir = "out/build/Windows-x86-Release"
+          
+          mkdir release
+          cp "$build_dir/lib/asi/RetroGameLANHook.asi" "release/RetroGameLANHook.asi"
+          cp "$build_dir/lib/wsock32/wsock32.dll" "release/wsock32.dll"
+          cp "RetroGameLANHook.ini" "release/RetroGameLANHook.ini"
+          
+          Get-ChildItem release
+
+      - name: Upload plugin as artifact
+        if: ${{ github.event_name == 'workflow_dispatch' && !inputs.create_release }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: RetroGameLANHook-${{ env.PROJECT_VERSION }}
+          path: release/
+
+      - name: Release Plugin
+        if: ${{ github.event_name == 'push' || inputs.create_release }}
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ env.PROJECT_VERSION }}
+          body_path: CHANGELOG.md
+          files: |
+            release/RetroGameLANHook.asi
+            release/wsock32.dll
+            release/RetroGameLANHook.ini
