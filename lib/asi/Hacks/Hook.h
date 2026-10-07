@@ -1,7 +1,9 @@
 #pragma once
 
 #include <cstring> // memcpy, std::size_t
-#include <windows.h> // WinAPI functions
+
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h> // WinAPI functions
 
 #include "untyped.h"
 #include "InvokeType.h"
