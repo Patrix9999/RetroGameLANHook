@@ -1,7 +1,3 @@
-project(RetroGameLANHook
-        DESCRIPTION "RetroGameLANHook.asi ASI Plugin"
-)
-
 add_library(${PROJECT_NAME} SHARED)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE common)
@@ -19,7 +15,7 @@ set_target_properties(${PROJECT_NAME}
 
 target_add_versioninfo(${PROJECT_NAME}
         FILE_NAME "${PROJECT_NAME}.asi"
-        VERSION "${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR}.${CMAKE_PROJECT_VERSION_PATCH}.${CMAKE_PROJECT_VERSION_TWEAK}"
+        VERSION "${PROJECT_VERSION}.${PROJECT_VERSION}.${PROJECT_VERSION}.${PROJECT_VERSION}"
         COMPANY_NAME ${CMAKE_PROJECT_NAME}
-        PRODUCT_NAME ${PROJECT_DESCRIPTION}
+        PRODUCT_NAME "RetroGameLANHook.asi ASI Plugin"
 )

@@ -1,29 +1,27 @@
 cmake_minimum_required(VERSION 3.25)
 
-project(wsock32_proxy
-	DESCRIPTION "wsock32.dll Proxy DLL"
-)
+set(TARGET_NAME wsock32_proxy)
 
-add_library(${PROJECT_NAME} SHARED)
+add_library(${TARGET_NAME} SHARED)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE common)
+target_link_libraries(${TARGET_NAME} PRIVATE common)
 target_include_directories(common PRIVATE "common/")
 
-target_sources(${PROJECT_NAME}
+target_sources(${TARGET_NAME}
 	PRIVATE
 		"wsock32_exports.cpp"
 		"wsock32.def"
 )
 
-target_add_versioninfo(${PROJECT_NAME}
+target_add_versioninfo(${TARGET_NAME}
 	FILE_NAME "wsock32.dll"
-	VERSION VERSION "${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR}.${CMAKE_PROJECT_VERSION_PATCH}.${CMAKE_PROJECT_VERSION_TWEAK}"
+	VERSION VERSION "${PROJECT_VERSION}.${PROJECT_VERSION}.${PROJECT_VERSION}.${PROJECT_VERSION}"
 	COMPANY_NAME ${CMAKE_PROJECT_NAME}
-	PRODUCT_NAME ${PROJECT_DESCRIPTION}
+	PRODUCT_NAME "wsock32.dll Proxy DLL"
 )
 
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E rename
-		"${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.dll"
+		"${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}.dll"
 		"${CMAKE_CURRENT_BINARY_DIR}/wsock32.dll"
 )
