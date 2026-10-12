@@ -56,11 +56,22 @@ jobs:
       - name: Prepare release files
         run: |
           $build_dir = "out/build/Windows-x86-Release"
-          
           mkdir release
+          
+          mkdir out/asi
           cp "$build_dir/lib/asi/RetroGameLANHook.asi" "release/RetroGameLANHook.asi"
-          cp "$build_dir/lib/wsock32/wsock32.dll" "release/wsock32.dll"
-          cp "RetroGameLANHook.ini" "release/RetroGameLANHook.ini"
+          cp "RetroGameLANHook.ini" "out/asi/RetroGameLANHook.ini"
+          zip -r release/asi.zip out/asi
+          
+          mkdir out/wsock32
+          cp "$build_dir/lib/wsock32/wsock32.dll" "out/wsock32/wsock32.dll"
+          cp "RetroGameLANHook.ini" "out/wsock32/RetroGameLANHook.ini"
+          zip -r release/wsock32.zip out/wsock32
+          
+          mkdir out/winmm
+          cp "$build_dir/lib/winmm/winmm.dll" "out/winmm/winmm.dll"
+          cp "RetroGameLANHook.ini" "out/winmm/RetroGameLANHook.ini"
+          zip -r release/winmm.zip out/winmm
           
           Get-ChildItem release
 
@@ -78,6 +89,6 @@ jobs:
           tag_name: ${{ env.PROJECT_VERSION }}
           body_path: CHANGELOG.md
           files: |
-            release/RetroGameLANHook.asi
-            release/wsock32.dll
-            release/RetroGameLANHook.ini
+            release/asi.zip
+            release/wsock32.zip
+            release/winmm.zip

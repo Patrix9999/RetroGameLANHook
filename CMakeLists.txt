@@ -25,3 +25,4 @@ add_subdirectory(common)
 
 add_subdirectory(lib/asi)
 add_subdirectory(lib/wsock32)
+add_subdirectory(lib/winmm)

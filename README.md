@@ -33,17 +33,17 @@ AdapterName = "Radmin VPN"
 ### Proxy
 
 > [!WARNING]
-> The game must use **`wsock32.dll`** for the proxy to work. Some games use **`ws2_32.dll`** instead and are not compatible with the `wsock32.dll` proxy.
+> Use `wsock32.zip` only for games that use the legacy `wsock32.dll` interface. For games that use `ws2_32.dll` or require a different proxy, use the `winmm.zip` proxy instead.
 
 The proxy version can be used when you want to load the mod without an ASI Loader.
 
 1. [Download](https://github.com/Patrix9999/RetroGameLANHook/releases) a release.
-2. Download the `wsock32.dll` proxy and `RetroGameLANHook.ini` configuration file from the release.
-3. Place both files in the game's main directory, next to the game's executable.
+2. Download the `wsock32.zip` or `winmm.zip` from the release.
+3. Unpack the `.dll` & `.ini` file, next to the game's executable.
 4. Make sure to follow the [configuration](#configuration) guide.
 5. Start the game. The proxy will load automatically.
 
-To uninstall the mod, remove the `wsock32.dll` proxy and `RetroGameLANHook.ini` from the game's directory.
+To uninstall the mod, remove the `.dll` proxy and `RetroGameLANHook.ini` from the game's directory.
 
 ### ASI Plugin
 
