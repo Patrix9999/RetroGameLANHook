@@ -61,17 +61,17 @@ jobs:
           mkdir out/asi
           cp "$build_dir/lib/asi/RetroGameLANHook.asi" "release/RetroGameLANHook.asi"
           cp "RetroGameLANHook.ini" "out/asi/RetroGameLANHook.ini"
-          zip -r release/asi.zip out/asi
+          Compress-Archive -Path "out/asi/*" -DestinationPath "release/asi.zip" -Force
           
           mkdir out/wsock32
           cp "$build_dir/lib/wsock32/wsock32.dll" "out/wsock32/wsock32.dll"
           cp "RetroGameLANHook.ini" "out/wsock32/RetroGameLANHook.ini"
-          zip -r release/wsock32.zip out/wsock32
+          Compress-Archive -Path "out/wsock32/*" -DestinationPath "release/wsock32.zip" -Force
           
           mkdir out/winmm
           cp "$build_dir/lib/winmm/winmm.dll" "out/winmm/winmm.dll"
           cp "RetroGameLANHook.ini" "out/winmm/RetroGameLANHook.ini"
-          zip -r release/winmm.zip out/winmm
+          Compress-Archive -Path "out/winmm/*" -DestinationPath "release/winmm.zip" -Force
           
           Get-ChildItem release
 
