@@ -1,1 +1,1 @@
-- Added `x86` `wsock32.dll` proxy for easier installation for older games.
+- Added `x86` `winmm.dll` proxy for easier installation for games using `x86` `ws2_32.dll`.
