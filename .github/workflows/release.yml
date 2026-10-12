@@ -59,7 +59,7 @@ jobs:
           mkdir release
           
           mkdir out/asi
-          cp "$build_dir/lib/asi/RetroGameLANHook.asi" "release/RetroGameLANHook.asi"
+          cp "$build_dir/lib/asi/RetroGameLANHook.asi" "out/asi/RetroGameLANHook.asi"
           cp "RetroGameLANHook.ini" "out/asi/RetroGameLANHook.ini"
           Compress-Archive -Path "out/asi/*" -DestinationPath "release/asi.zip" -Force
           
