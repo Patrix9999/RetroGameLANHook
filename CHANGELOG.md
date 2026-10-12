@@ -1,1 +1,2 @@
 - Added `x86` `winmm.dll` proxy for easier installation for games using `x86` `ws2_32.dll`.
+- Reading `.ini` file from near `dll` location, instead of `.exe`.

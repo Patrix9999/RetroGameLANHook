@@ -16,9 +16,13 @@ const char* GetSettingsAdapterName()
 
     initialized = true;
 
+    HMODULE module = nullptr;
+    if (!GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, reinterpret_cast<LPCSTR>(&GetSettingsAdapterName), &module))
+        return nullptr;
+
     char iniFilePath[MAX_PATH] = {};
 
-    DWORD result = GetModuleFileNameA(nullptr, iniFilePath, sizeof(iniFilePath));
+    const DWORD result = GetModuleFileNameA(module, iniFilePath, sizeof(iniFilePath));
     if (result == 0 || result >= MAX_PATH)
         return nullptr;
 

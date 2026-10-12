@@ -54,7 +54,7 @@ You need an ASI Loader to use this plugin. I recommend [Ultimate ASI Loader](htt
 3. Make sure to follow the [configuration](#configuration) guide.
 4. Start the game. The mod will load automatically.
 
-To uninstall the mod, remove `RetroGameLANHook.asi` from your `plugins` directory.
+To uninstall the mod, remove `RetroGameLANHook.asi` and `RetroGameLANHook.ini` from your `plugins` directory.
 
 If, for some reason, your game doesn't support any DLL provided by the **ASI Loader**, you can use an injector instead. I recommend [Auto DLL Injector](https://sourceforge.net/projects/autodllinjector/); it is easy to use and allows you to inject the DLL automatically when the game starts.
 
